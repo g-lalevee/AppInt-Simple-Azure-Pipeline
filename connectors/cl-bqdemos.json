@@ -1,0 +1,21 @@
+{
+	"connectorDetails": {
+		"name": "bigquery",
+		"provider": "gcp",
+		"version": 1
+	},
+	"configVariables": [
+		{
+			"key": "project_id",
+			"stringValue": "$GCP_PROJECT_ID"
+		},
+		{
+			"key": "dataset_id",
+			"stringValue": "ApigeeDemos"
+		}
+	],
+	"authConfig": {},
+	"logConfig":{
+		"enabled":true
+	}
+}

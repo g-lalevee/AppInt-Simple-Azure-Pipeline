@@ -1,0 +1,105 @@
+# Maven
+
+# Build your Java project and run tests with Apache Maven.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/java
+
+trigger:
+- main
+- releases/*
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  GCP_PROJECT_ID: "bap-emea-apigee-5"
+  GCP_REGION: "europe-west1"
+  # GCP_SERVICE_ACCOUNT variable is set in repository settings (file variable)
+  INTEGRATION_TARGET_NAME: "airports-integration-cicd"
+  CONNECTION_TARGET_NAME: "cl-bqdemos"
+
+  GRANT_PERMISSIONS: "true"
+  ENCRYPTED: "false"
+  KMS_RING_NAME: "app-integration"
+  KMS_KEY_NAME: "integration"
+
+
+steps:
+
+# run integrationcli, Gogle CLI to manage Application Integration and Integration Connectors
+- bash: |
+      # The following environment variables may be set to control the behavior of integrationcli. The default values are all false.
+      INTEGRATIONCLI_DEBUG=false # enables debug log
+      INTEGRATIONCLI_SKIPCACHE=false # will not cache the access token on the disk
+      INTEGRATIONCLI_DISABLE_RATELIMIT=false # disables rate limiting when making calls to Integration or Connectors APIs
+      INTEGRATIONCLI_NO_USAGE=false # does not print usage when the command fails
+      INTEGRATIONCLI_NO_ERRORS=false # does not print error messages from the CLI (control plane error messages are displayed)
+      INTEGRATIONCLI_DRYRUN=false # does not execute control plane APIs
+
+      # Generate and cache oAuth Token
+      ./bin/integrationcli token gen -a $GCP_SERVICE_ACCOUNT --no-output > /dev/null
+      ./bin/integrationcli token cache -a $GCP_SERVICE_ACCOUNT --no-output > /dev/null
+
+      echo "Encrypted ? " $ENCRYPTED 
+      # set integrationcli parameters
+      if [ "$ENCRYPTED" == "true" ]; then echo " -k locations/$GCP_REGION/keyRings/$KMS_RING_NAME/cryptoKeys/$KMS_KEY_NAME" > ./cmd ; fi
+
+      echo "Grant permission ?" $GRANT_PERMISSIONS
+      if [ "$GRANT_PERMISSIONS" == "true" ]; then echo " --grant-permission=true" >> ./cmd ; fi
+      
+      # rename connection + change project ID in connector config file
+      echo "rename connection + change project ID in connector config file"
+      envsubst < ./connectors/cl-bqdemos.json > ./connectors/$CONNECTION_TARGET_NAME.json
+      rm ./connectors/cl-bqdemos.json
+    
+      #  change connector name in overrides file
+      echo "change connector name in overrides file"
+      mv ./overrides/overrides.json ./overrides/overrides.tmp.json
+      envsubst < ./overrides/overrides.tmp.json > ./overrides/overrides.json
+
+      # rename integration 
+      mv ./src/airports-integration-cicd.json ./src/$INTEGRATION_TARGET_NAME.json
+
+      # deploy
+      ./bin/integrationcli integrations apply -f . $(cat ./cmd) --reg=$GCP_REGION --proj=$GCP_PROJECT_ID --userlabel $CI_COMMIT_MESSAGE
+
+  enabled: "true"
+  displayName: deployIntegration
+
+
+# install node.js tools and dependencies
+- task: NodeTool@0
+  inputs:
+    versionSpec: '20.x'
+  enabled: "true"
+    
+- task: Npm@1
+  inputs:
+    command: 'install'
+    workingDir: '.'
+  displayName: npmInstalls
+  enabled: "true"
+
+
+# run Apickli, API test integration
+- bash: |
+    echo "run Apickli"
+    mkdir integration_output
+    export NODE_TLS_REJECT_UNAUTHORIZED="0"
+    sed -i "s/organization_hostname/$TEST_HOST/g" ./test/integration/features/support/init.js
+    node ./node_modules/cucumber/bin/cucumber-js ./test/integration --format json:report.json
+    node ./test/integration/index.js
+    cp ./cucumber_report.html integration_output/apickli_report.html 
+  displayName: runApickli
+  enabled: "true"
+  
+
+# Publish integration test folder result
+- task: PublishBuildArtifacts@1
+  displayName: publishInteegrationTestsResults
+  enabled: "true"
+  inputs:
+    pathToPublish: integration_output
+    artifactName: integration-tests
+
+

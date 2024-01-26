@@ -1,0 +1,68 @@
+{
+	"connection_overrides": [
+		{
+			"taskId": "20",
+			"task": "GenericConnectorTask",
+			"parameters": {
+				"connectionName": "$CONNECTION_TARGET_NAME"
+			}
+		},
+		{
+			"taskId": "18",
+			"task": "GenericConnectorTask",
+			"parameters": {
+				"connectionName": "$CONNECTION_TARGET_NAME"
+			}
+		},
+		{
+			"taskId": "16",
+			"task": "GenericConnectorTask",
+			"parameters": {
+				"connectionName": "$CONNECTION_TARGET_NAME"
+			}
+		},
+		{
+			"taskId": "19",
+			"task": "GenericConnectorTask",
+			"parameters": {
+				"connectionName": "$CONNECTION_TARGET_NAME"
+			}
+		},
+		{
+			"taskId": "23",
+			"task": "GenericConnectorTask",
+			"parameters": {
+				"connectionName": "$CONNECTION_TARGET_NAME"
+			}
+		}
+	],
+	"param_overrides": [
+		{
+			"key": "_environment",
+			"defaultValue": {
+				"stringValue": "GitLab CICD sample"
+			}
+		},
+		{
+			"key": "_version",
+			"defaultValue": {
+				"stringValue": "1.0"
+			}
+		},
+		{
+			"key": "_apigee_proxy",
+			"defaultValue": {
+				"stringValue": "airports-app-integration-cicd"
+			}
+		},
+		{
+			"key": "_apigee_proxy_revision",
+			"defaultValue": {
+				"stringValue": "30"
+			}
+		}
+	]
+}
+
+
+

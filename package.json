@@ -1,0 +1,24 @@
+{
+    "name": "appint-cicd-v1",
+    "version": "1.0.0",
+    "description": "Sample Proxy for CI/CD Reference",
+    "author": "lalevee",
+    "license": "Apache-2.0",
+    "licenses": [
+        {
+            "type": "Apache-2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0"
+        }
+    ],
+    "scripts": {
+        "integration-test": "cucumber-js ./test/integration"
+    },
+    "dependencies": {
+        "@cucumber/cucumber": "^9",
+        "@cucumber/pretty-formatter": "^1",
+        "cucumber-html-reporter": "latest",
+        "@xmldom/xmldom": "0.x",
+        "apickli": "latest"
+    }
+    
+}

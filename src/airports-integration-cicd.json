@@ -1,0 +1,547 @@
+{
+	"snapshotNumber": "8",
+	"triggerConfigs": [
+		{
+			"label": "API Trigger",
+			"triggerType": "API",
+			"triggerNumber": "1",
+			"triggerId": "api_trigger/airport_cicd_API_1",
+			"startTasks": [
+				{
+					"taskId": "21"
+				}
+			],
+			"properties": {
+				"Trigger name": "airport_cicd_API_1"
+			}
+		}
+	],
+	"taskConfigs": [
+		{
+			"task": "FieldMappingTask",
+			"taskId": "21",
+			"parameters": {
+				"FieldMappingConfigTaskParameterKey": {
+					"key": "FieldMappingConfigTaskParameterKey",
+					"value": {
+						"jsonValue": "{\n  \"@type\": \"type.googleapis.com/enterprise.crm.eventbus.proto.FieldMappingConfig\",\n  \"mappedFields\": [{\n    \"inputField\": {\n      \"fieldType\": \"JSON_VALUE\",\n      \"transformExpression\": {\n        \"initialValue\": {\n          \"referenceValue\": \"$InputJson$\"\n        },\n        \"transformationFunctions\": [{\n          \"functionType\": {\n            \"jsonFunction\": {\n              \"functionName\": \"GET_PROPERTY\"\n            }\n          },\n          \"parameters\": [{\n            \"initialValue\": {\n              \"literalValue\": {\n                \"stringValue\": \"operation\"\n              }\n            }\n          }]\n        }]\n      }\n    },\n    \"outputField\": {\n      \"referenceKey\": \"$Operation$\",\n      \"fieldType\": \"STRING_VALUE\",\n      \"cardinality\": \"OPTIONAL\"\n    }\n  }]\n}"
+					}
+				}
+			},
+			"displayName": "Data Mapping",
+			"nextTasks": [
+				{
+					"taskId": "10",
+					"condition": "$Operation$ = DELETE",
+					"displayName": "DELETE"
+				},
+				{
+					"taskId": "15",
+					"condition": "$Operation$ = POST",
+					"displayName": "POST"
+				},
+				{
+					"taskId": "13",
+					"condition": "$Operation$ = PUT",
+					"displayName": "PUT"
+				},
+				{
+					"taskId": "7",
+					"condition": "$Operation$ = LIST AND $InputJson.filterQuery$ != \"\"",
+					"displayName": "LIST"
+				},
+				{
+					"taskId": "23",
+					"condition": "$Operation$ = LIST AND $InputJson.filterQuery$ = \"\"",
+					"displayName": "LISTALL"
+				}
+			],
+			"taskExecutionStrategy": "WHEN_ALL_SUCCEED",
+			"externalTaskType": "NORMAL_TASK"
+		},
+		{
+			"task": "FieldMappingTask",
+			"taskId": "10",
+			"parameters": {
+				"FieldMappingConfigTaskParameterKey": {
+					"key": "FieldMappingConfigTaskParameterKey",
+					"value": {
+						"jsonValue": "{\n  \"@type\": \"type.googleapis.com/enterprise.crm.eventbus.proto.FieldMappingConfig\",\n  \"mappedFields\": [{\n    \"inputField\": {\n      \"fieldType\": \"STRING_VALUE\",\n      \"transformExpression\": {\n        \"initialValue\": {\n          \"referenceValue\": \"$InputJson.filterQuery$\"\n        }\n      }\n    },\n    \"outputField\": {\n      \"referenceKey\": \"$`Task_20_filterClause`$\",\n      \"fieldType\": \"STRING_VALUE\",\n      \"cardinality\": \"OPTIONAL\"\n    }\n  }]\n}"
+					}
+				}
+				
+			},
+			"displayName": "Map for Delete",
+			"nextTasks": [
+				{
+					"taskId": "20"
+				}
+			],
+			"taskExecutionStrategy": "WHEN_ANY_SUCCEED",
+			"externalTaskType": "NORMAL_TASK"
+		},
+		{
+			"task": "GenericConnectorTask",
+			"taskId": "16",
+			"parameters": {
+				"config": {
+					"key": "config",
+					"value": {
+						"jsonValue": "{\n  \"@type\": \"type.googleapis.com/enterprise.crm.eventbus.proto.connectors.GenericConnectorTaskConfig\",\n  \"connection\": {\n    \"connectionName\": \"projects/bap-emea-apigee-5/locations/europe-west1/connections/cl-bqdemos\",\n    \"serviceName\": \"projects/rda9173c8292491d5-tp/locations/europe-west1/namespaces/connectors/services/runtime\",\n    \"connectorVersion\": \"projects/bap-emea-apigee-5/locations/global/providers/gcp/connectors/bigquery/versions/1\"\n  },\n  \"operation\": \"LIST_ENTITIES\"\n}"
+					}
+				},
+				"connectorOutputPayload": {
+					"key": "connectorOutputPayload",
+					"value": {
+						"stringValue": "$`Task_16_connectorOutputPayload`$"
+					}
+				},
+				"entityType": {
+					"key": "entityType",
+					"value": {
+						"stringValue": "iata"
+					}
+				},
+				"filterClause": {
+					"key": "filterClause",
+					"value": {
+						"stringValue": "$`Task_16_filterClause`$"
+					}
+				},
+				"listEntitiesNextPageToken": {
+					"key": "listEntitiesNextPageToken",
+					"value": {
+						"stringValue": "$`Task_16_listEntitiesNextPageToken`$"
+					}
+				},
+				"listEntitiesPageSize": {
+					"key": "listEntitiesPageSize",
+					"value": {
+						"stringValue": "$`Task_16_listEntitiesPageSize`$"
+					}
+				},
+				"listEntitiesPageToken": {
+					"key": "listEntitiesPageToken",
+					"value": {
+						"stringValue": "$`Task_16_listEntitiesPageToken`$"
+					}
+				},
+				"listEntitiesSortByColumns": {
+					"key": "listEntitiesSortByColumns",
+					"value": {
+						"stringValue": "$`Task_16_listEntitiesSortByColumns`$"
+					}
+				}
+			},
+			"displayName": "BQ List",
+			"taskExecutionStrategy": "WHEN_ALL_SUCCEED",
+			"externalTaskType": "NORMAL_TASK"
+		},
+		{
+			"task": "GenericConnectorTask",
+			"taskId": "18",
+			"parameters": {
+				"config": {
+					"key": "config",
+					"value": {
+						"jsonValue": "{\n  \"@type\": \"type.googleapis.com/enterprise.crm.eventbus.proto.connectors.GenericConnectorTaskConfig\",\n  \"connection\": {\n    \"connectionName\": \"projects/bap-emea-apigee-5/locations/europe-west1/connections/cl-bqdemos\",\n    \"serviceName\": \"projects/rda9173c8292491d5-tp/locations/europe-west1/namespaces/connectors/services/runtime\",\n    \"connectorVersion\": \"projects/bap-emea-apigee-5/locations/global/providers/gcp/connectors/bigquery/versions/1\"\n  },\n  \"operation\": \"UPDATE_ENTITY\"\n}"
+					}
+				},
+				"connectorInputPayload": {
+					"key": "connectorInputPayload",
+					"value": {
+						"stringValue": "$`Task_18_connectorInputPayload`$"
+					}
+				},
+				"connectorOutputPayload": {
+					"key": "connectorOutputPayload",
+					"value": {
+						"stringValue": "$`Task_18_connectorOutputPayload`$"
+					}
+				},
+				"entityId": {
+					"key": "entityId",
+					"value": {
+						"stringValue": "$`Task_18_entityId`$"
+					}
+				},
+				"entityType": {
+					"key": "entityType",
+					"value": {
+						"stringValue": "iata"
+					}
+				},
+				"filterClause": {
+					"key": "filterClause",
+					"value": {
+						"stringValue": "$`Task_18_filterClause`$"
+					}
+				}
+			},
+			"displayName": "BQ Update",
+			"taskExecutionStrategy": "WHEN_ALL_SUCCEED",
+			"externalTaskType": "NORMAL_TASK"
+		},
+		{
+			"task": "FieldMappingTask",
+			"taskId": "15",
+			"parameters": {
+				"FieldMappingConfigTaskParameterKey": {
+					"key": "FieldMappingConfigTaskParameterKey",
+					"value": {
+						"jsonValue": "{\n  \"@type\": \"type.googleapis.com/enterprise.crm.eventbus.proto.FieldMappingConfig\",\n  \"mappedFields\": [{\n    \"inputField\": {\n      \"fieldType\": \"JSON_VALUE\",\n      \"transformExpression\": {\n        \"initialValue\": {\n          \"referenceValue\": \"$InputJson.airports$\"\n        }\n      }\n    },\n    \"outputField\": {\n      \"referenceKey\": \"$`Task_19_connectorInputPayload`$\",\n      \"fieldType\": \"JSON_VALUE\",\n      \"cardinality\": \"OPTIONAL\"\n    }\n  }]\n}"
+					}
+				}
+			},
+			"displayName": "Map for Insert (POST)",
+			"nextTasks": [
+				{
+					"taskId": "19"
+				}
+			],
+			"taskExecutionStrategy": "WHEN_ANY_SUCCEED",
+			"externalTaskType": "NORMAL_TASK"
+		},
+		{
+			"task": "GenericConnectorTask",
+			"taskId": "20",
+			"parameters": {
+				"config": {
+					"key": "config",
+					"value": {
+						"jsonValue": "{\n  \"@type\": \"type.googleapis.com/enterprise.crm.eventbus.proto.connectors.GenericConnectorTaskConfig\",\n  \"connection\": {\n    \"connectionName\": \"projects/bap-emea-apigee-5/locations/europe-west1/connections/cl-bqdemos\",\n    \"serviceName\": \"projects/rda9173c8292491d5-tp/locations/europe-west1/namespaces/connectors/services/runtime\",\n    \"connectorVersion\": \"projects/bap-emea-apigee-5/locations/global/providers/gcp/connectors/bigquery/versions/1\"\n  },\n  \"operation\": \"DELETE_ENTITY\"\n}"
+					}
+				},
+				"entityId": {
+					"key": "entityId",
+					"value": {
+						"stringValue": "$`Task_20_entityId`$"
+					}
+				},
+				"entityType": {
+					"key": "entityType",
+					"value": {
+						"stringValue": "iata"
+					}
+				},
+				"filterClause": {
+					"key": "filterClause",
+					"value": {
+						"stringValue": "$`Task_20_filterClause`$"
+					}
+				}
+			},
+			"displayName": "BQ Delete",
+			"taskExecutionStrategy": "WHEN_ALL_SUCCEED",
+			"externalTaskType": "NORMAL_TASK"
+		},
+		{
+			"task": "GenericConnectorTask",
+			"taskId": "19",
+			"parameters": {
+				"config": {
+					"key": "config",
+					"value": {
+						"jsonValue": "{\n  \"@type\": \"type.googleapis.com/enterprise.crm.eventbus.proto.connectors.GenericConnectorTaskConfig\",\n  \"connection\": {\n    \"connectionName\": \"projects/bap-emea-apigee-5/locations/europe-west1/connections/cl-bqdemos\",\n    \"serviceName\": \"projects/rda9173c8292491d5-tp/locations/europe-west1/namespaces/connectors/services/runtime\",\n    \"connectorVersion\": \"projects/bap-emea-apigee-5/locations/global/providers/gcp/connectors/bigquery/versions/1\"\n  },\n  \"operation\": \"CREATE_ENTITY\"\n}"
+					}
+				},
+				"connectorInputPayload": {
+					"key": "connectorInputPayload",
+					"value": {
+						"stringValue": "$`Task_19_connectorInputPayload`$"
+					}
+				},
+				"connectorOutputPayload": {
+					"key": "connectorOutputPayload",
+					"value": {
+						"stringValue": "$`Task_19_connectorOutputPayload`$"
+					}
+				},
+				"entityType": {
+					"key": "entityType",
+					"value": {
+						"stringValue": "iata"
+					}
+				}
+			},
+			"displayName": "BQ Add Row",
+			"taskExecutionStrategy": "WHEN_ALL_SUCCEED",
+			"externalTaskType": "NORMAL_TASK"
+		},
+		{
+			"task": "FieldMappingTask",
+			"taskId": "7",
+			"parameters": {
+				"FieldMappingConfigTaskParameterKey": {
+					"key": "FieldMappingConfigTaskParameterKey",
+					"value": {
+						"jsonValue": "{\n  \"@type\": \"type.googleapis.com/enterprise.crm.eventbus.proto.FieldMappingConfig\",\n  \"mappedFields\": [{\n    \"inputField\": {\n      \"fieldType\": \"STRING_VALUE\",\n      \"transformExpression\": {\n        \"initialValue\": {\n          \"referenceValue\": \"$InputJson.filterQuery$\"\n        }\n      }\n    },\n    \"outputField\": {\n      \"referenceKey\": \"$`Task_16_filterClause`$\",\n      \"fieldType\": \"STRING_VALUE\",\n      \"cardinality\": \"OPTIONAL\"\n    }\n  }]\n}"
+					}
+				}
+			},
+			"displayName": "Map for LIST",
+			"nextTasks": [
+				{
+					"taskId": "16"
+				}
+			],
+			"taskExecutionStrategy": "WHEN_ANY_SUCCEED",
+			"externalTaskType": "NORMAL_TASK"
+		},
+		{
+			"task": "FieldMappingTask",
+			"taskId": "13",
+			"parameters": {
+				"FieldMappingConfigTaskParameterKey": {
+					"key": "FieldMappingConfigTaskParameterKey",
+					"value": {
+						"jsonValue": "{\n  \"@type\": \"type.googleapis.com/enterprise.crm.eventbus.proto.FieldMappingConfig\",\n  \"mappedFields\": [{\n    \"inputField\": {\n      \"fieldType\": \"JSON_VALUE\",\n      \"transformExpression\": {\n        \"initialValue\": {\n          \"referenceValue\": \"$InputJson.airports$\"\n        }\n      }\n    },\n    \"outputField\": {\n      \"referenceKey\": \"$`Task_18_connectorInputPayload`$\",\n      \"fieldType\": \"JSON_VALUE\",\n      \"cardinality\": \"OPTIONAL\"\n    }\n  }, {\n    \"inputField\": {\n      \"fieldType\": \"STRING_VALUE\",\n      \"transformExpression\": {\n        \"initialValue\": {\n          \"referenceValue\": \"$InputJson.filterQuery$\"\n        }\n      }\n    },\n    \"outputField\": {\n      \"referenceKey\": \"$`Task_18_filterClause`$\",\n      \"fieldType\": \"STRING_VALUE\",\n      \"cardinality\": \"OPTIONAL\"\n    }\n  }]\n}"
+					}
+				}
+			},
+			"displayName": "Map for Update (PUT)",
+			"nextTasks": [
+				{
+					"taskId": "18"
+				}
+			],
+			"taskExecutionStrategy": "WHEN_ANY_SUCCEED",
+			"externalTaskType": "NORMAL_TASK"
+		},
+		{
+			"task": "GenericConnectorTask",
+			"taskId": "23",
+			"parameters": {
+				"config": {
+					"key": "config",
+					"value": {
+						"jsonValue": "{\n  \"@type\": \"type.googleapis.com/enterprise.crm.eventbus.proto.connectors.GenericConnectorTaskConfig\",\n  \"connection\": {\n    \"connectionName\": \"projects/bap-emea-apigee-5/locations/europe-west1/connections/cl-bqdemos\",\n    \"serviceName\": \"projects/rda9173c8292491d5-tp/locations/europe-west1/namespaces/connectors/services/runtime\",\n    \"connectorVersion\": \"projects/bap-emea-apigee-5/locations/global/providers/gcp/connectors/bigquery/versions/1\"\n  },\n  \"operation\": \"LIST_ENTITIES\"\n}"
+					}
+				},
+				"connectorOutputPayload": {
+					"key": "connectorOutputPayload",
+					"value": {
+						"stringValue": "$`Task_23_connectorOutputPayload`$"
+					}
+				},
+				"entityType": {
+					"key": "entityType",
+					"value": {
+						"stringValue": "iata"
+					}
+				},
+				"filterClause": {
+					"key": "filterClause",
+					"value": {
+						"stringValue": "$`Task_23_filterClause`$"
+					}
+				},
+				"listEntitiesNextPageToken": {
+					"key": "listEntitiesNextPageToken",
+					"value": {
+						"stringValue": "$`Task_23_listEntitiesNextPageToken`$"
+					}
+				},
+				"listEntitiesPageSize": {
+					"key": "listEntitiesPageSize",
+					"value": {
+						"stringValue": "$`Task_23_listEntitiesPageSize`$"
+					}
+				},
+				"listEntitiesPageToken": {
+					"key": "listEntitiesPageToken",
+					"value": {
+						"stringValue": "$`Task_23_listEntitiesPageToken`$"
+					}
+				},
+				"listEntitiesSortByColumns": {
+					"key": "listEntitiesSortByColumns",
+					"value": {
+						"stringValue": "$`Task_23_listEntitiesSortByColumns`$"
+					}
+				}
+			},
+			"displayName": "BQ List All ",
+			"taskExecutionStrategy": "WHEN_ALL_SUCCEED",
+			"externalTaskType": "NORMAL_TASK"
+		}
+	],
+	"integrationParameters": [
+		{
+			"key": "Operation",
+			"dataType": "STRING_VALUE",
+			"defaultValue": {
+				"stringValue": "POST"
+			},
+			"searchable": true
+		},
+		{
+			"key": "entityId",
+			"dataType": "STRING_VALUE",
+			"defaultValue": {
+				"stringValue": ""
+			}
+		},
+		{
+			"key": "filterQuery",
+			"dataType": "STRING_VALUE",
+			"defaultValue": {
+				"stringValue": ""
+			}
+		},
+		{
+			"key": "consumers",
+			"dataType": "JSON_VALUE",
+			"jsonSchema": "{\n  \"$schema\": \"http://json-schema.org/draft-04/schema#\",\n  \"type\": \"object\",\n  \"properties\": {\n    \"hostname\": {\n      \"type\": \"string\"\n    },\n    \"consumerId\": {\n      \"type\": \"string\"\n    },\n    \"adminEmail\": {\n      \"type\": \"string\"\n    }\n  }\n}"
+		},
+		{
+			"key": "`Task_16_listEntitiesPageSize`",
+			"dataType": "INT_VALUE",
+			"producer": "1_16"
+		},
+		{
+			"key": "`Task_16_listEntitiesPageToken`",
+			"dataType": "STRING_VALUE",
+			"producer": "1_16"
+		},
+		{
+			"key": "`Task_16_listEntitiesSortByColumns`",
+			"dataType": "STRING_ARRAY",
+			"producer": "1_16"
+		},
+		{
+			"key": "`Task_16_filterClause`",
+			"dataType": "STRING_VALUE",
+			"producer": "1_16"
+		},
+		{
+			"key": "`Task_16_listEntitiesNextPageToken`",
+			"dataType": "STRING_VALUE",
+			"isTransient": true,
+			"producer": "1_16"
+		},
+		{
+			"key": "`Task_18_connectorInputPayload`",
+			"dataType": "JSON_VALUE",
+			"producer": "1_18",
+			"jsonSchema": "{\n  \"type\": \"object\",\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"properties\": {\n    \"airport\": {\n      \"type\": [\"string\", \"null\"],\n      \"readOnly\": false\n    },\n    \"code\": {\n      \"type\": [\"string\", \"null\"],\n      \"readOnly\": false\n    }\n  }\n}"
+		},
+		{
+			"key": "`Task_18_entityId`",
+			"dataType": "STRING_VALUE",
+			"producer": "1_18"
+		},
+		{
+			"key": "`Task_18_filterClause`",
+			"dataType": "STRING_VALUE",
+			"producer": "1_18"
+		},
+		{
+			"key": "`Task_18_connectorOutputPayload`",
+			"dataType": "JSON_VALUE",
+			"isTransient": true,
+			"producer": "1_18"
+		},
+		{
+			"key": "`Task_19_connectorInputPayload`",
+			"dataType": "JSON_VALUE",
+			"producer": "1_19",
+			"jsonSchema": "{\n  \"type\": \"object\",\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"properties\": {\n    \"airport\": {\n      \"type\": [\"string\", \"null\"],\n      \"readOnly\": false\n    },\n    \"code\": {\n      \"type\": [\"string\", \"null\"],\n      \"readOnly\": false\n    }\n  }\n}"
+		},
+		{
+			"key": "`Task_19_connectorOutputPayload`",
+			"dataType": "JSON_VALUE",
+			"isTransient": true,
+			"producer": "1_19"
+		},
+		{
+			"key": "`Task_20_entityId`",
+			"dataType": "STRING_VALUE",
+			"producer": "1_20"
+		},
+		{
+			"key": "`Task_20_filterClause`",
+			"dataType": "STRING_VALUE",
+			"producer": "1_20"
+		},
+		{
+			"key": "`Task_23_listEntitiesPageSize`",
+			"dataType": "INT_VALUE",
+			"producer": "1_23"
+		},
+		{
+			"key": "`Task_23_listEntitiesPageToken`",
+			"dataType": "STRING_VALUE",
+			"producer": "1_23"
+		},
+		{
+			"key": "`Task_23_listEntitiesSortByColumns`",
+			"dataType": "STRING_ARRAY",
+			"producer": "1_23"
+		},
+		{
+			"key": "`Task_23_filterClause`",
+			"dataType": "STRING_VALUE",
+			"producer": "1_23"
+		},
+		{
+			"key": "`Task_23_listEntitiesNextPageToken`",
+			"dataType": "STRING_VALUE",
+			"isTransient": true,
+			"producer": "1_23"
+		},
+		{
+			"key": "`Task_16_connectorOutputPayload`",
+			"dataType": "JSON_VALUE",
+			"isTransient": true,
+			"inputOutputType": "OUT",
+			"producer": "1_16",
+			"jsonSchema": "{\n  \"type\": \"array\",\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"items\": {\n    \"type\": \"object\",\n    \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n    \"properties\": {\n      \"airport\": {\n        \"type\": [\"string\", \"null\"],\n        \"readOnly\": false\n      },\n      \"code\": {\n        \"type\": [\"string\", \"null\"],\n        \"readOnly\": false\n      }\n    }\n  }\n}"
+		},
+		{
+			"key": "`Task_23_connectorOutputPayload`",
+			"dataType": "JSON_VALUE",
+			"isTransient": true,
+			"inputOutputType": "OUT",
+			"producer": "1_23",
+			"jsonSchema": "{\n  \"type\": \"array\",\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"items\": {\n    \"type\": \"object\",\n    \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n    \"properties\": {\n      \"airport\": {\n        \"type\": [\"string\", \"null\"],\n        \"readOnly\": false\n      },\n      \"code\": {\n        \"type\": [\"string\", \"null\"],\n        \"readOnly\": false\n      }\n    }\n  }\n}"
+		},
+		{
+			"key": "InputJson",
+			"dataType": "JSON_VALUE",
+			"defaultValue": {
+				"jsonValue": "{\n  \"operation\": \"LIST\",\n  \"filterQuery\": \"code='AAC'\"\n}"
+			},
+			"inputOutputType": "IN",
+			"jsonSchema": "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"type\": \"object\",\n  \"properties\": {\n    \"operation\": {\n      \"type\": \"string\"\n    },\n    \"filterQuery\": {\n      \"type\": \"string\"\n    },\n    \"airports\": {\n      \"type\": \"object\",\n      \"properties\": {\n        \"code\": {\n          \"type\": \"string\"\n        },\n        \"airport\": {\n          \"type\": \"string\"\n        }\n      }\n    }\n  }\n}"
+		},
+		{
+			"key": "_environment",
+			"dataType": "STRING_VALUE",
+			"defaultValue": {
+				"stringValue": "dev"
+			}
+		},
+		{
+			"key": "_version",
+			"dataType": "STRING_VALUE",
+			"defaultValue": {
+				"stringValue": "1.0"
+			}
+		},
+		{
+			"key": "_apigee_proxy",
+			"dataType": "STRING_VALUE",
+			"defaultValue": {
+				"stringValue": "airports-app-integration-cicd"
+			}
+		},
+		{
+			"key": "_apigee_proxy_revision",
+			"dataType": "STRING_VALUE",
+			"defaultValue": {
+				"stringValue": "30"
+			}
+		}
+	]
+}
