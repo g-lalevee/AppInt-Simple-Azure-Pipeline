@@ -109,8 +109,8 @@ steps:
     echo "---------------------------"
     echo " Install dependencies"
     echo "---------------------------"
-    # npm install --silent --no-fund
-    apk add --no-cache jq
+    apt-get update
+    apt-get install jq
 
     echo "-------------------------------"
     echo " Init Variables & update files"
