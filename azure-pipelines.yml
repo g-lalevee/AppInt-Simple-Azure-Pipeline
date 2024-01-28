@@ -57,10 +57,10 @@ steps:
       cat sa.json
       echo "------------------------------"
 
-      /home/vsts/.integrationcli/bin/integrationcli token gen -a sa.json  
+      /home/vsts/.integrationcli/bin/integrationcli token gen -a sa.json   > /dev/null
       echo "------------------------------"
 
-      /home/vsts/.integrationcli/bin/integrationcli token cache -a sa.json --no-output > /dev/null
+      /home/vsts/.integrationcli/bin/integrationcli token cache -a sa.json  > /dev/null
 
       echo "Encrypted ? " $ENCRYPTED 
       # set integrationcli parameters
@@ -83,7 +83,8 @@ steps:
       mv ./src/airports-integration-cicd.json ./src/$INTEGRATION_TARGET_NAME.json
 
       # deploy
-      /home/vsts/.integrationcli/bin/integrationcli integrations apply -f . $(cat ./cmd) --reg=$GCP_REGION --proj=$GCP_PROJECT_ID --userlabel $CI_COMMIT_MESSAGE
+      echo "------- DEPLOY -----------------------"
+      /home/vsts/.integrationcli/bin/integrationcli integrations apply -f . $(cat ./cmd) --reg=$GCP_REGION --proj=$GCP_PROJECT_ID --userlabel $(Build.SourceVersion)	
 
   enabled: "true"
   displayName: deployIntegration
