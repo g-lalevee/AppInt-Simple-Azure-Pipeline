@@ -35,13 +35,15 @@ steps:
   env:  
     GCP_SERVICE_ACCOUNT: $(GCP_SERVICE_ACCOUNT)
 
+
 # run integrationcli, Gogle CLI to manage Application Integration and Integration Connectors
 - bash: |
       # Install integrationcli tool
       apk add --no-cache gettext curl
       curl -L https://raw.githubusercontent.com/GoogleCloudPlatform/application-integration-management-toolkit/main/downloadLatest.sh | sh -
-      ls /tmp/integrationcli.*
-      cp -r /tmp/integrationcli.RxI5Lk/bin ./bin
+      ls /tmp/
+      
+      cp -r /tmp/integrationcli.*/bin ./bin
       ls ./bin
       ./bin/integrationcli --version
 
