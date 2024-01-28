@@ -1,7 +1,7 @@
 # Google Cloud Application Integration CI/CD using GitHub and Azure Pipeline
 
 
-[![Build Status](https://dev.azure.com/clalevee/Application%20Integration%20Simple%20Azure%20Pipeline/_apis/build/status%2Fg-lalevee.AppInt-Simple-Azure-Pipeline?branchName=main)](https://dev.azure.com/clalevee/Application%20Integration%20Simple%20Azure%20Pipeline/_build/latest?definitionId=10&branchName=main)
+[![Build Status](https://dev.azure.com/clalevee/Application%20Integration%20Simple%20Azure%20Pipeline/_apis/build/status%2Fg-lalevee.AppInt-Simple-Azure-Pipeline?branchName=main&jobName=Job)](https://dev.azure.com/clalevee/Application%20Integration%20Simple%20Azure%20Pipeline/_build/latest?definitionId=10&branchName=main)
 [![Generic badge](https://img.shields.io/badge/status-work--in--progress-important.svg)](https://shields.io/) 
 
 ***
