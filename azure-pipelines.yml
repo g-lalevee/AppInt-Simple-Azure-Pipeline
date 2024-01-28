@@ -39,14 +39,11 @@ steps:
 # run integrationcli, Gogle CLI to manage Application Integration and Integration Connectors
 - bash: |
       # Install integrationcli tool
-      # dkpg
-      LATEST_VERSION=$(curl https://api.github.com/repos/sigstore/cosign/releases/latest | grep tag_name | cut -d : -f2 | tr -d "v\", ")
-      curl -O -L "https://github.com/sigstore/cosign/releases/latest/download/cosign_${LATEST_VERSION}_amd64.deb"
-      sudo dpkg -i cosign_${LATEST_VERSION}_amd64.deb
-      
+        
       curl -L https://raw.githubusercontent.com/GoogleCloudPlatform/application-integration-management-toolkit/main/downloadLatest.sh | sh -
 
       /home/vsts/.integrationcli/bin/integrationcli --version
+      echo "------------------------------"
 
       # The following environment variables may be set to control the behavior of integrationcli. The default values are all false.
       INTEGRATIONCLI_DEBUG=false # enables debug log
@@ -58,7 +55,11 @@ steps:
 
       # Generate and cache oAuth Token
       cat sa.json
-      /home/vsts/.integrationcli/bin/integrationcli token gen -a sa.json --no-output > /dev/null
+      echo "------------------------------"
+
+      /home/vsts/.integrationcli/bin/integrationcli token gen -a sa.json  
+      echo "------------------------------"
+
       /home/vsts/.integrationcli/bin/integrationcli token cache -a sa.json --no-output > /dev/null
 
       echo "Encrypted ? " $ENCRYPTED 
