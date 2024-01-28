@@ -39,7 +39,7 @@ steps:
 # run integrationcli, Gogle CLI to manage Application Integration and Integration Connectors
 - bash: |
       # Install integrationcli tool
-      apk add --no-cache gettext curl
+      apk add --no-cache gettext curl cosign
       curl -L https://raw.githubusercontent.com/GoogleCloudPlatform/application-integration-management-toolkit/main/downloadLatest.sh >  ./downloadLatest.sh
 
       ls -a
