@@ -45,14 +45,10 @@ steps:
       sudo dpkg -i cosign_${LATEST_VERSION}_amd64.deb
       
       curl -L https://raw.githubusercontent.com/GoogleCloudPlatform/application-integration-management-toolkit/main/downloadLatest.sh >  ./downloadLatest.sh
-
-      ls -a
-     
+           
       bash ./downloadLatest.sh 
 
-      cp -r /tmp/integrationcli.*/bin ./bin
-      ls ./bin
-      ./bin/integrationcli --version
+      /home/vsts/.integrationcli/bin/integrationcli --version
 
       # The following environment variables may be set to control the behavior of integrationcli. The default values are all false.
       INTEGRATIONCLI_DEBUG=false # enables debug log
@@ -63,8 +59,8 @@ steps:
       INTEGRATIONCLI_DRYRUN=false # does not execute control plane APIs
 
       # Generate and cache oAuth Token
-      ./bin/integrationcli token gen -a sa.json --no-output > /dev/null
-      ./bin/integrationcli token cache -a sa.json --no-output > /dev/null
+      /home/vsts/.integrationcli/bin/integrationcli token gen -a sa.json --no-output > /dev/null
+      /home/vsts/.integrationcli/bin/integrationcli token cache -a sa.json --no-output > /dev/null
 
       echo "Encrypted ? " $ENCRYPTED 
       # set integrationcli parameters
@@ -87,7 +83,7 @@ steps:
       mv ./src/airports-integration-cicd.json ./src/$INTEGRATION_TARGET_NAME.json
 
       # deploy
-      ./bin/integrationcli integrations apply -f . $(cat ./cmd) --reg=$GCP_REGION --proj=$GCP_PROJECT_ID --userlabel $CI_COMMIT_MESSAGE
+      /home/vsts/.integrationcli/bin/integrationcli integrations apply -f . $(cat ./cmd) --reg=$GCP_REGION --proj=$GCP_PROJECT_ID --userlabel $CI_COMMIT_MESSAGE
 
   enabled: "true"
   displayName: deployIntegration
