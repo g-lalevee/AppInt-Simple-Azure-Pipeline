@@ -106,11 +106,6 @@ steps:
 
 # run Apickli, API test integration
 - bash: |
-    echo "---------------------------"
-    echo " Install dependencies"
-    echo "---------------------------"
-    jq --version
-
     echo "-------------------------------"
     echo " Init Variables & update files"
     echo "-------------------------------"
@@ -122,7 +117,6 @@ steps:
     sed -i "s@api_basepath@$API_BASEPATH@g" ./tests/appint_tests/features/support/init.js
 
     export TRIGGER=$(cat ./src/$INTEGRATION_TARGET_NAME.json | jq .triggerConfigs[0].triggerId)
-    echo "Trigger=" $TRIGGER
     sed -i "s@TRIGGER_NAME@$TRIGGER@g" ./tests/appint_tests/features/trigger.feature
 
     export TOKEN=$(/home/vsts/.integrationcli/bin/integrationcli token gen -a sa.json)
