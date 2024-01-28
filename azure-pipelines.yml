@@ -84,7 +84,7 @@ steps:
 
       # deploy
       echo "------- DEPLOY -----------------------"
-      /home/vsts/.integrationcli/bin/integrationcli integrations apply -f . $(cat ./cmd) --reg=$GCP_REGION --proj=$GCP_PROJECT_ID --userlabel $(Build.SourceVersion)	
+      /home/vsts/.integrationcli/bin/integrationcli integrations apply -f . $(cat ./cmd) --reg=$GCP_REGION --proj=$GCP_PROJECT_ID --userlabel $(Build.SourceVersionMessage)	
 
   enabled: "true"
   displayName: deployIntegration
@@ -107,14 +107,14 @@ steps:
 # run Apickli, API test integration
 - bash: |
     echo "---------------------------"
-    echo "Install dependencies"
+    echo " Install dependencies"
     echo "---------------------------"
     # npm install --silent --no-fund
     apk add --no-cache jq
 
-    echo "------------------------------"
-    echo "Init Variables & update files"
-    echo "------------------------------"
+    echo "-------------------------------"
+    echo " Init Variables & update files"
+    echo "-------------------------------"
 
     export TEST_HOST="$GCP_REGION-integrations.googleapis.com"
     sed -i "s@hostname@$TEST_HOST@g" ./tests/appint_tests/features/support/init.js
@@ -125,11 +125,11 @@ steps:
     export TRIGGER=$(cat ./src/$INTEGRATION_TARGET_NAME.json | jq .triggerConfigs[0].triggerId)
     sed -i "s@TRIGGER_NAME@$TRIGGER@g" ./tests/appint_tests/features/trigger.feature
 
-    export TOKEN=$(./bin/integrationcli token gen -a sa.json)
+    export TOKEN=$(/home/vsts/.integrationcli/bin/integrationcli token gen -a sa.json)
     sed -i "s@MY-TOKEN@$TOKEN@g" ./tests/appint_tests/features/trigger.feature
 
     echo "---------------------------"
-    echo "Run tests"
+    echo " Run tests"
     echo "---------------------------"
     mkdir integration_output
     node ./node_modules/.bin/cucumber-js  ./tests --format json:report.json || true  # catch all errors for demo purpose 
