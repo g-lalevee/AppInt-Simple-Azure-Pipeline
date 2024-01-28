@@ -40,8 +40,8 @@ steps:
       # Install integrationcli tool
       apk add --no-cache gettext curl
       curl -L https://raw.githubusercontent.com/GoogleCloudPlatform/application-integration-management-toolkit/main/downloadLatest.sh | sh -
-      ls /root/.integrationcli/bin
-      cp -r /root/.integrationcli/bin ./bin
+      ls /tmp/integrationcli.*
+      cp -r /tmp/integrationcli.RxI5Lk/bin ./bin
       ls ./bin
       ./bin/integrationcli --version
 
