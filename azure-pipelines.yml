@@ -37,6 +37,14 @@ steps:
 
 # run integrationcli, Gogle CLI to manage Application Integration and Integration Connectors
 - bash: |
+      # Install integrationcli tool
+      apk add --no-cache gettext curl
+      curl -L https://raw.githubusercontent.com/GoogleCloudPlatform/application-integration-management-toolkit/main/downloadLatest.sh | sh -
+      ls /root/.integrationcli/bin
+      cp -r /root/.integrationcli/bin ./bin
+      ls ./bin
+      ./bin/integrationcli --version
+
       # The following environment variables may be set to control the behavior of integrationcli. The default values are all false.
       INTEGRATIONCLI_DEBUG=false # enables debug log
       INTEGRATIONCLI_SKIPCACHE=false # will not cache the access token on the disk
