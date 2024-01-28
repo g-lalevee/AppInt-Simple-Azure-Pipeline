@@ -109,8 +109,6 @@ steps:
     echo "---------------------------"
     echo " Install dependencies"
     echo "---------------------------"
-    sudo apt-get update
-    sudo apt-get install jq
     jq --version
 
     echo "-------------------------------"
